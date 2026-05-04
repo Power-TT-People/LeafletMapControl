@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2018",
+    "module": "es2020",
+    "lib": ["ES2018", "DOM"],
+    "moduleResolution": "bundler",
+    "outDir": "out/controls",
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": true,
+    "typeRoots": ["node_modules/@types"],
+    "types": ["powerapps-component-framework", "node"],
+    "strict": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  }
+}
