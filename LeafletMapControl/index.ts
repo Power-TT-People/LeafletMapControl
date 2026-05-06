@@ -15,6 +15,8 @@ interface LeafletLayerGroup {
 
 interface LeafletMarker {
   bindPopup(content: string): void;
+  openPopup(): void;
+  closePopup(): void;
   on(event: string, callback: () => void): void;
 }
 
@@ -221,7 +223,35 @@ export class LeafletMapControl
 
       marker.bindPopup(popupContent);
 
+      let _hoverCloseTimer: number | null = null;
+
+      marker.on("mouseover", () => {
+        if (_hoverCloseTimer !== null) {
+          window.clearTimeout(_hoverCloseTimer);
+          _hoverCloseTimer = null;
+        }
+        marker.openPopup();
+      });
+
+      marker.on("mouseout", () => {
+        _hoverCloseTimer = window.setTimeout(() => marker.closePopup(), 300);
+      });
+
       marker.on("popupopen", () => {
+        // Keep popup open when the mouse moves into it
+        const popupWrapper = this._container.querySelector<HTMLElement>(".leaflet-popup");
+        if (popupWrapper) {
+          popupWrapper.addEventListener("mouseenter", () => {
+            if (_hoverCloseTimer !== null) {
+              window.clearTimeout(_hoverCloseTimer);
+              _hoverCloseTimer = null;
+            }
+          });
+          popupWrapper.addEventListener("mouseleave", () => {
+            _hoverCloseTimer = window.setTimeout(() => marker.closePopup(), 300);
+          });
+        }
+
         const link = this._container.querySelector<HTMLAnchorElement>(
           `.lcm-popup__link[data-id="${id}"]`
         );
