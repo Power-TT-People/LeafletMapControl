@@ -180,6 +180,9 @@ export class LeafletMapControl
       dataset.sortedRecordIds.length === 0
     ) return;
 
+    const recordIds = this._resolveRecordIdsForRender(context, dataset.sortedRecordIds);
+    if (recordIds.length === 0) return;
+
     const bounds: [number, number][] = [];
     const targetEntity = dataset.getTargetEntityType?.() || "record";
     const openLabel = `Open ${targetEntity} ↗`;
@@ -190,7 +193,7 @@ export class LeafletMapControl
     const titleFields = this._fieldList(context.parameters.titleField.raw,       ["name", "fullname", "subject", "title", "accountnumber"]);
     const descFields  = this._fieldList(context.parameters.descriptionField.raw, ["description", "address1_composite", "address1_line1"]);
 
-    for (const id of dataset.sortedRecordIds) {
+    for (const id of recordIds) {
       const record = dataset.records[id];
 
       const lat = this._toNumber(this._getFirstValue(record, latFields));
@@ -275,6 +278,61 @@ export class LeafletMapControl
     } else if (bounds.length > 1) {
       this._map.fitBounds(bounds, { padding: [40, 40] });
     }
+  }
+
+  private _resolveRecordIdsForRender(
+    context: ComponentFramework.Context<IInputs>,
+    sortedRecordIds: string[]
+  ): string[] {
+    const currentRecordId = this._getCurrentRecordId(context);
+    if (!currentRecordId) {
+      return sortedRecordIds;
+    }
+
+    const normalizedCurrentId = this._normalizeRecordId(currentRecordId);
+    const matchingId = sortedRecordIds.find(
+      (id) => this._normalizeRecordId(id) === normalizedCurrentId
+    );
+
+    return matchingId ? [matchingId] : sortedRecordIds;
+  }
+
+  private _getCurrentRecordId(context: ComponentFramework.Context<IInputs>): string | null {
+    const contextual = context as ComponentFramework.Context<IInputs> & {
+      mode?: {
+        contextInfo?: {
+          entityId?: string;
+        };
+      };
+      page?: {
+        entityId?: string;
+        getEntityId?: () => string;
+      };
+    };
+
+    const entityIdFromMode = contextual.mode?.contextInfo?.entityId;
+    if (entityIdFromMode && entityIdFromMode.trim().length > 0) {
+      return entityIdFromMode;
+    }
+
+    const entityIdFromPage = contextual.page?.entityId;
+    if (entityIdFromPage && entityIdFromPage.trim().length > 0) {
+      return entityIdFromPage;
+    }
+
+    const getEntityId = contextual.page?.getEntityId;
+    if (typeof getEntityId === "function") {
+      const entityId = getEntityId();
+      if (entityId && entityId.trim().length > 0) {
+        return entityId;
+      }
+    }
+
+    return null;
+  }
+
+  private _normalizeRecordId(recordId: string): string {
+    return recordId.replace(/[{}]/g, "").toLowerCase();
   }
 
   // ─── Helpers ──────────────────────────────────────────────────────────────
