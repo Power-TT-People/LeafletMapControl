@@ -16,6 +16,11 @@
       <domain>tile.openstreetmap.org</domain>
       <domain>nominatim.openstreetmap.org</domain>
     </external-service-usage>
+    <type-group name="LatLngType">
+      <type>SingleLine.Text</type>
+      <type>Decimal</type>
+      <type>FP</type>
+    </type-group>
     <property name="defaultLatitude" display-name-key="Default Latitude" description-key="Default map center latitude" of-type="Decimal" usage="input" required="false" />
     <property name="defaultLongitude" display-name-key="Default Longitude" description-key="Default map center longitude" of-type="Decimal" usage="input" required="false" />
     <property name="defaultZoom" display-name-key="Default Zoom" description-key="Default map zoom level" of-type="Whole.None" usage="input" required="false" />
@@ -34,9 +39,8 @@
     <!-- dataset node represents a set of entity records on CDS; allow more than one datasets -->
     <data-set name="mapDataSet" display-name-key="Dataset_Display_Key">
       <!-- 'property-set' node represents a unique, configurable property that each record in the dataset must provide. -->
-      <!-- UNCOMMENT TO ADD PROPERTY-SET NODE
-      <property-set name="samplePropertySet" display-name-key="Property_Display_Key" description-key="Property_Desc_Key" of-type="SingleLine.Text" usage="bound" required="true" />
-      -->
+      <property-set name="latitudeColumn" display-name-key="Latitude Column" description-key="Bind latitude to a Dataverse column (text, decimal, or float)" of-type-group="LatLngType" usage="bound" required="false" />
+      <property-set name="longitudeColumn" display-name-key="Longitude Column" description-key="Bind longitude to a Dataverse column (text, decimal, or float)" of-type-group="LatLngType" usage="bound" required="false" />
     </data-set>
     <resources>
       <code path="index.ts" order="1"/>

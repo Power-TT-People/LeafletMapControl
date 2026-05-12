@@ -35,6 +35,8 @@ These URLs must be allowlisted in your Power Platform environment if network res
 | `defaultLatitude` | Decimal | Default map center latitude |
 | `defaultLongitude` | Decimal | Default map center longitude |
 | `defaultZoom` | Whole Number | Default zoom level |
+| `latitudeColumn` | Bound column (Text/Decimal/Float) | Preferred dataset-bound latitude column |
+| `longitudeColumn` | Bound column (Text/Decimal/Float) | Preferred dataset-bound longitude column |
 | `latitudeField` | SingleLine.Text | Dataset field containing latitude |
 | `longitudeField` | SingleLine.Text | Dataset field containing longitude |
 | `titleField` | SingleLine.Text | Dataset field for marker popup title |

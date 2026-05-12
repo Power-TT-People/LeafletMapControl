@@ -196,8 +196,15 @@ export class LeafletMapControl
     for (const id of recordIds) {
       const record = dataset.records[id];
 
-      const lat = this._toNumber(this._getFirstValue(record, latFields));
-      const lng = this._toNumber(this._getFirstValue(record, lngFields));
+      // Prefer bound property-set columns when configured; fall back to logical-name lookup inputs.
+      const latFromBound = this._toNumber(record.getValue("latitudeColumn"));
+      const lngFromBound = this._toNumber(record.getValue("longitudeColumn"));
+      const lat = isNaN(latFromBound)
+        ? this._toNumber(this._getFirstValue(record, latFields))
+        : latFromBound;
+      const lng = isNaN(lngFromBound)
+        ? this._toNumber(this._getFirstValue(record, lngFields))
+        : lngFromBound;
       let resolvedLat = lat;
       let resolvedLng = lng;
       const name = this._toText(this._getFirstValue(record, titleFields), "Record");
